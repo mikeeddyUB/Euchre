@@ -71,7 +71,7 @@ public class BasicPlayer implements Player {
 
 	public Card discard(Suite trump) {
 
-		Card card = EuchreUtils.getLosingCard(hand);
+		Card card = EuchreUtils.getLosingCard(hand, trump, null);
 		// remove card from hand and return it
 		removeCard(card);
 		System.out.println("Player " + getId() + " discarded " + card.toString());
