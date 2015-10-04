@@ -58,7 +58,7 @@ public class Suite {
 		}
 	}
 	
-	enum SuiteColor{
+	public enum SuiteColor{
 		BLACK,RED;
 	}
 }

@@ -7,7 +7,7 @@ import euchre.game.utilities.Suite;
 import euchre.players.BasicPlayer.Team;
 
 public interface Player { // make this an abstract class I think
-	public Card playCard();
+	public Card playCard(List<Card> playedCards, Suite trump);
 	public List<Card> sortCards();
 	public Card discard(Suite trump);
 	public Suite decideTrump(Suite turnedSuite, boolean anySuite);

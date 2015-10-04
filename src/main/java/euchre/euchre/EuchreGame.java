@@ -186,12 +186,22 @@ public class EuchreGame {
 
 	}
 
-	public void dealCards() {
-
-	}
-
-	public void doRound() { // return a score?
-
+	public void doRound(Suite trump) { // return a score? or return the current score for both teams?
+		// make the id be an integer?
+		List<Card> playedCards = new ArrayList<Card>();
+		int offset = getDealer().getId().intValue() + 1; // get the id of the dealer and then add one
+		for ( int i = offset; i < players.size() + offset;i++){
+			Card playedCard = players.get(i % players.size()).playCard(playedCards, trump);
+			playedCards.add(playedCard);
+			EuchreUtils.getWinningCard(playedCards, trump, playedCards.get(0).getSuite());
+		}
+			
+		
+		// iterate over the players starting with the player after the dealer
+		// they each play a card
+		// decide who won the round
+		// add point to the round score tracker
+		// also need to keep track of who ordered it up and how many were tacken (for scoring purposes)
 	}
 
 	public void initialize() { // maybe make this initialize next round?

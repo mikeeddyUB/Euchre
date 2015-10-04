@@ -1,8 +1,11 @@
 package euchre.game.utilities;
 
+import euchre.players.Player;
+
 public class Card {
 	private Suite suite;
 	private FaceValue value;
+	private Player playedBy;
 
 	public Card(Suite suite, FaceValue faceValue) {
 		this.suite = suite;
@@ -56,5 +59,13 @@ public class Card {
 
 	public boolean equals(Object o) {
 		return (o instanceof Card && ((Card)o).getSuite().equals(this.getSuite()) && ((Card)o).getValue() == this.getValue());
+	}
+
+	public Player getPlayedBy() {
+		return playedBy;
+	}
+
+	public void setPlayedBy(Player playedBy) {
+		this.playedBy = playedBy;
 	}
 }

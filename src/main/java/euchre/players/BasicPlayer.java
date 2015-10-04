@@ -9,6 +9,7 @@ import euchre.euchre.EuchreGame;
 import euchre.game.utilities.Card;
 import euchre.game.utilities.EuchreUtils;
 import euchre.game.utilities.Suite;
+import euchre.game.utilities.Card.FaceValue;
 import euchre.game.utilities.Suite.SuiteName;
 
 public class BasicPlayer implements Player {
@@ -45,8 +46,35 @@ public class BasicPlayer implements Player {
 		this.team = team;
 	}
 
-	public Card playCard() {
-		return null;
+	public Card playCard(List<Card> playedCards, Suite trump) {
+		Card cardToPlay = null;
+		Suite suiteLead;
+		boolean followedSuite = false;
+		if (playedCards.size() > 0) {
+			// assuming the cards are in order...
+			suiteLead = playedCards.get(0).getSuite();
+			System.out.println("Suite lead was " + suiteLead.getName().toString());
+			for (Card card : getHand()) {
+				boolean cardIsLeft = (card.getValue() == FaceValue.JACK) && !(card.getSuite().equals(trump)) && card.getSuite().getColor().equals(trump.getColor());
+				if (cardToPlay == null && card.getSuite().equals(suiteLead)
+						|| (suiteLead.equals(trump) || card.getSuite().equals(trump) && cardIsLeft)) {
+					followedSuite = true;
+					cardToPlay = card;
+					getHand().remove(card);
+					break;
+				}
+			}
+		}
+		
+		if (cardToPlay == null){ // for now if you dont have to follow suite just play a random card
+			cardToPlay = getHand().get(0);
+			getHand().remove(cardToPlay);
+		}
+
+		// for now just play a legal card
+		cardToPlay.setPlayedBy(this);
+		System.out.println("Player " + getId() + " played " + cardToPlay.toString() + (followedSuite?"(followed suite)":"(random)"));
+		return cardToPlay;
 	}
 
 	/**
