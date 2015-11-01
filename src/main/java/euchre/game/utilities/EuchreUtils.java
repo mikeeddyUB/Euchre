@@ -7,10 +7,16 @@ import euchre.game.utilities.Card.FaceValue;
 
 public class EuchreUtils {
 
+	public boolean isLeft(Card card, Suite trump){
+		if ( card.getValue() != FaceValue.JACK){
+			throw new RuntimeException("Only Jacks can be left's");
+		}
+		return card.getSuite().getColor() == trump.getColor() && card.getSuite().getName() != trump.getName();
+	}
+	
 	public static Card getWinningCard(List<Card> cards, Suite trump, Suite leadSuite) {
 		List<Card> sortedCards = EuchreUtils.sortCards(cards, trump, leadSuite);
 		Card card = sortedCards.get(cards.size() - 1);
-		System.out.println("Player " + card.getPlayedBy().getId() + " won the round with " + card.toString());
 		return card;
 	}
 
@@ -22,18 +28,15 @@ public class EuchreUtils {
 	 * returns true of card1 is high than card2 return null if the cards are of
 	 * equal value
 	 */
-	public static boolean compareCards(Card card1, Card card2, Suite trump, Suite leadSuite) { // should
-																								// unit
-																								// test
-																								// this
-																								// method
+	public static boolean compareCards(Card card1, Card card2, Suite trump, Suite leadSuite) { 
 
 		boolean card1IsTrumpSuite = card1.getSuite().equals(trump);
 		boolean card2IsTrumpSuite = card2.getSuite().equals(trump);
 
 		boolean card1IsJack = card1.getValue() == FaceValue.JACK;
 		boolean card2IsJack = card2.getValue() == FaceValue.JACK;
-
+		
+		// null check for if trump is null?
 		boolean card1IsLeft = card1IsJack && !card1IsTrumpSuite && card1.getSuite().getColor().equals(trump.getColor());
 		boolean card2IsLeft = card2IsJack && !card2IsTrumpSuite && card2.getSuite().getColor().equals(trump.getColor());
 
@@ -58,6 +61,7 @@ public class EuchreUtils {
 		boolean cond6 = card1.getValue().getValue() > card2.getValue().getValue() && !card2IsJack;
 
 		if ((neitherTrump && (cond1 || condb)) || cond2 || (bothTrump && (card1IsRight || cond5 || cond6))) {
+			// currently a bug if both cards arent trump but were the lead suite
 			return true;
 		} else {
 			return false;

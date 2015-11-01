@@ -61,4 +61,8 @@ public class Suite {
 	public enum SuiteColor{
 		BLACK,RED;
 	}
+	
+	public String toString(){
+		return getName().name();
+	}
 }

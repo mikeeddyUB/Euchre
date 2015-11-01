@@ -10,6 +10,7 @@ import euchre.game.utilities.Card.FaceValue;
 import euchre.game.utilities.Deck;
 import euchre.game.utilities.EuchreUtils;
 import euchre.game.utilities.Kitty;
+import euchre.game.utilities.RoundResult;
 import euchre.game.utilities.Suite;
 import euchre.game.utilities.Suite.SuiteName;
 import euchre.players.BasicPlayer;
@@ -19,6 +20,7 @@ import euchre.players.Player;
 public class EuchreGame {
 
 	private Deck deck;
+	private List<Card> discardPile;
 	private Kitty kitty;
 	private List<Player> players;
 	private List<Team> teams;
@@ -33,6 +35,7 @@ public class EuchreGame {
 	public EuchreGame() {
 		deck = new Deck();
 		kitty = new Kitty();
+		discardPile = new ArrayList<Card>();
 		players = new ArrayList<Player>();
 		teams = new ArrayList<Team>();
 		suites = new ArrayList<Suite>();
@@ -57,6 +60,7 @@ public class EuchreGame {
 		if (dealer == null) {
 			players.get(0).setDealer(true);
 		}
+		System.out.println("Player " + getDealer().getId() + " is the dealer");
 		dealCards(dealer);
 	}
 
@@ -73,7 +77,7 @@ public class EuchreGame {
 		int i = 0;
 		while (i < ((NUMCARDSINHAND * players.size()) - 1)) {
 			for (Player player : players) {
-				card = deck.removeCard();
+				card = getDeck().removeCard();
 				player.addCard(card);
 				i++;
 			}
@@ -81,7 +85,10 @@ public class EuchreGame {
 		// populate the kitty
 		kitty.setCards(deck.removeRemainingCards());
 		kitty.flipCard();
-
+		// print each players hand and the kitty
+		for (Player player : players) {
+			System.out.println("Player " + player.getId() + "'s hand : " + player.getHand());
+		}
 	}
 
 	public Suite decideTrump() {
@@ -90,12 +97,12 @@ public class EuchreGame {
 		Card flippedCard = kitty.getFlippedCard(false);
 		for (int i = startingIndex; i < startingIndex + 4; i++) {
 			Player player = players.get(i % players.size());
-			trump = player.decideTrump(flippedCard.getSuite(), false);
+			trump = player.decideTrump(flippedCard.getSuite(), false, false);
 			if (trump != null) {
-				getKitty().getCards().add(getDealer().discard(trump));
-				getDealer().addCard(getKitty().getFlippedCard(true));
 				System.out.println("Player " + player.getId() + (player.isDealer() ? " picked" : " ordered")
 						+ " up the " + flippedCard.toString());
+				getKitty().getCards().add(getDealer().discard(trump));
+				getDealer().addCard(getKitty().getFlippedCard(true));
 				break;
 			} else {
 				System.out.println("Player " + player.getId() + " has passed");
@@ -104,7 +111,7 @@ public class EuchreGame {
 		if (trump == null) { // meaning we still havent picked trump
 			for (int i = startingIndex; i < startingIndex + 4; i++) {
 				Player player = players.get(i % players.size());
-				trump = player.decideTrump(flippedCard.getSuite(), true);
+				trump = player.decideTrump(flippedCard.getSuite(), true, i == startingIndex + 3);
 				if (trump != null) {
 					System.out.println("Player " + player.getId() + (player.isDealer() ? " picked" : " ordered")
 							+ " up the " + flippedCard.toString());
@@ -180,28 +187,42 @@ public class EuchreGame {
 		for (SuiteName name : SuiteName.values()) {
 			for (FaceValue val : FaceValue.values()) {
 				this.deck.addCard(new Card(getSuite(name), val));
-				System.out.println("Added card #" + counter++);
+				// System.out.println("Added card #" + counter++);
 			}
 		}
 
 	}
 
-	public void doRound(Suite trump) { // return a score? or return the current score for both teams?
+	// this represents a round, not a hand
+	public RoundResult doRound(Suite trump) { // return a score? or return the current
+										// score for both teams?
 		// make the id be an integer?
-		List<Card> playedCards = new ArrayList<Card>();
-		int offset = getDealer().getId().intValue() + 1; // get the id of the dealer and then add one
-		for ( int i = offset; i < players.size() + offset;i++){
-			Card playedCard = players.get(i % players.size()).playCard(playedCards, trump);
-			playedCards.add(playedCard);
-			EuchreUtils.getWinningCard(playedCards, trump, playedCards.get(0).getSuite());
+		int offset = getDealer().getId().intValue()/* + 1 */;
+		int j = 0;
+		Card winningCard = null;
+		while (j++ < 5) {
+			List<Card> playedCards = new ArrayList<Card>();
+			// each time, after the first time, the offset will have to change
+			// since the winner of the hand plays first
+			if (winningCard != null) {
+				offset = winningCard.getPlayedBy().getId().intValue() - 1;
+			}
+			for (int i = offset; i < players.size() + offset; i++) {
+				Card playedCard = players.get(i % players.size()).playCard(playedCards, trump);
+				discardPile.add(playedCard);
+				playedCards.add(playedCard);
+			}
+			winningCard = EuchreUtils.getWinningCard(playedCards, trump, playedCards.get(0).getSuite());
+			System.out.println("\nPlayer " + winningCard.getPlayedBy().getId() + " won the round with " + winningCard.toString() + "\n");
 		}
-			
-		
-		// iterate over the players starting with the player after the dealer
-		// they each play a card
-		// decide who won the round
+
 		// add point to the round score tracker
-		// also need to keep track of who ordered it up and how many were tacken (for scoring purposes)
+		// also need to keep track of who ordered it up and how many were tacken
+		// (for scoring purposes)
+		deck = getDeck();
+		deck.addAll(getDiscardPile());
+		deck.addAll(getKitty().getCards());
+		return new RoundResult(winningCard); // in the future also set the amount of points for winning
 	}
 
 	public void initialize() { // maybe make this initialize next round?
@@ -215,5 +236,13 @@ public class EuchreGame {
 			}
 		}
 		throw new RuntimeException("Tried to retrieve the dealer before it was assigned");
+	}
+
+	public List<Card> getDiscardPile() {
+		return discardPile;
+	}
+
+	public void setDiscardPile(List<Card> discardPile) {
+		this.discardPile = discardPile;
 	}
 }

@@ -25,7 +25,7 @@ public class Card {
 	}
 
 	public String toString() {
-		return getValue().name() + " of " + getSuite().name + "s";
+		return getValue().name() + " of " + getSuite().name + "S";
 	}
 
 	public FaceValue getValue() {
@@ -44,7 +44,7 @@ public class Card {
 	}
 
 	public enum FaceValue {
-		NINE(9), TEN(10), JACK(3), QUEEN(4), KING(5), ACE(6);
+		NINE(9), TEN(10), JACK(11), QUEEN(12), KING(13), ACE(14);
 
 		private int value;
 

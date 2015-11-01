@@ -10,11 +10,21 @@ public class Deck {
 		this.cards = new ArrayList<Card>();
 	}
 	
+	/**
+	 * Currently only used for the putting the last four cards into the kitty
+	 * @return
+	 */
 	public List<Card> removeRemainingCards(){
 		List<Card> listCopy = new ArrayList<Card>(this.cards);
 		this.cards.removeAll(this.cards);
 		return listCopy;
 	}
+	
+	public void addAll(List<Card> cards){
+		this.cards.addAll(cards);
+		cards.removeAll(cards);
+	}
+	
 	public Card removeCard(){
 		return this.cards.remove(this.cards.size() - 1);
 	}
