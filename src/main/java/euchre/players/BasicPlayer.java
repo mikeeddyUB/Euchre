@@ -1,7 +1,6 @@
 package euchre.players;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,75 +9,35 @@ import euchre.euchre.EuchreGame;
 import euchre.game.utilities.Card;
 import euchre.game.utilities.EuchreUtils;
 import euchre.game.utilities.Suite;
-import euchre.game.utilities.Card.FaceValue;
 import euchre.game.utilities.Suite.SuiteName;
+import euchre.game.utilities.Team;
 
-public class BasicPlayer implements Player {
-
-	private Long id;
-	private Team team;
-	private List<Card> hand;
-	private boolean dealer;
-
+public class BasicPlayer extends AbstractPlayer implements Player {
 	public BasicPlayer() {
 		this.hand = new ArrayList<Card>();
 	}
 
 	public BasicPlayer(Long id, Team team) {
+		this();
 		setId(id);
 		setTeam(team);
-		this.hand = new ArrayList<Card>();
 	}
 
-	public void addCard(Card card) {
-		this.hand.add(card);
-		// System.out.println("Player " + getId() + " received a " +
-		// card.toString());
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public void setTeam(Team team) {
-		this.team = team;
-	}
-
-	public Card playCard(List<Card> playedCards, Suite trump) { // write unit
-																// tests
+	public Card playCard(List<Card> playedCards, Suite trump) { 
+																
 		Card cardToPlay = null;
 		Suite suiteLead;
 		boolean followedSuite = false;
-		if (playedCards.size() > 0) { // if the left is lead, everything breaks
+		if (playedCards.size() > 0) {
 			// assuming the cards are in order...
-			suiteLead = playedCards.get(0).getSuite(); // check here if the
-														// suite lead was
-														// actually the left
-														// bower and change it
-														// to the correct suite
-			if (playedCards.get(0).getSuite().getColor() == trump.getColor() && 
-					playedCards.get(0).getValue() == FaceValue.JACK && 
-					playedCards.get(0).getSuite().getName() != trump.getName()){
+			suiteLead = playedCards.get(0).getSuite();
+			if(EuchreUtils.isLeft(playedCards.get(0), trump)){
 				suiteLead = trump;
 			}
 			
-			
-			if (playedCards.get(0).getValue() == FaceValue.JACK
-					&& playedCards.get(0).getSuite().getColor() == trump.getColor()
-					&& playedCards.get(0).getSuite().getName() != trump.getName()) {
-				suiteLead = trump;
-			}
-//			System.out.println("Suite lead was " + suiteLead.getName().toString());
 			for (Card card : getHand()) {
-				boolean cardIsLeft = (card.getValue() == FaceValue.JACK) && !(card.getSuite().equals(trump))
-						&& card.getSuite().getColor().equals(trump.getColor());
 
-				if (cardToPlay == null && card.getSuite().equals(suiteLead)
-						/*|| (suiteLead.equals(trump) || card.getSuite().equals(trump) && cardIsLeft)*/) {
+				if (cardToPlay == null && card.getSuite().equals(suiteLead)) {
 					followedSuite = true;
 					cardToPlay = card;
 					getHand().remove(card);
@@ -93,9 +52,8 @@ public class BasicPlayer implements Player {
 			getHand().remove(cardToPlay);
 		}
 
-		// for now just play a legal card
 		cardToPlay.setPlayedBy(this);
-		System.out.println("Player " + getId() + " played " + cardToPlay.toString()
+		System.out.println(this.toString() + " played " + cardToPlay.toString()
 				+ (followedSuite ? "(followed suite)" : "(random)"));
 		return cardToPlay;
 	}
@@ -107,24 +65,11 @@ public class BasicPlayer implements Player {
 		return null;
 	}
 
-	private void removeCard(Card cardToRemove) {
-		boolean cardFound = false;
-		for (int i = 0; i < hand.size(); i++) {
-			if (hand.get(i).equals(cardToRemove)) {
-				hand.remove(i);
-				cardFound = true;
-			}
-		}
-		if (!cardFound) {
-			throw new RuntimeException("Couldnt find card");
-		}
-	}
-
 	public Card discard(Suite trump) {
 
 		Card card = EuchreUtils.getLosingCard(hand, trump, null);
 		// remove card from hand and return it
-		removeCard(card);
+		this.removeCard(card);
 		System.out.println("Player " + getId() + " discarded " + card.toString());
 		return card;
 	}
@@ -144,6 +89,11 @@ public class BasicPlayer implements Player {
 		return suiteMap;
 	}
 
+	/**
+	 * currently being used to pick a suite (of the remaining suites) that has more than 1 card
+	 * @param turnedSuite
+	 * @return
+	 */
 	private Map<SuiteName, Integer> buildSuiteMap(Suite turnedSuite) {
 		Map<SuiteName, Integer> suiteMap = new HashMap<SuiteName, Integer>();
 		suiteMap.put(SuiteName.SPADE, 0);
@@ -160,7 +110,6 @@ public class BasicPlayer implements Player {
 				}
 			}
 		}
-
 		return suiteMap;
 	}
 
@@ -186,7 +135,6 @@ public class BasicPlayer implements Player {
 			}
 		}
 		// if they're the last person to decide trump (the dealer) then they
-		// have to pick one
 		if (mustCallTrump) {
 			suiteMap = buildSuiteMap(turnedSuite);
 			for (SuiteName key : suiteMap.keySet()) {
@@ -201,35 +149,11 @@ public class BasicPlayer implements Player {
 		return null;
 	}
 
-	public enum Team {
-		ONE, TWO;
-	}
-
 	public boolean equals(Object o) {
 		if (o instanceof Player && ((Player) o).getId().equals(this.id)) {
 			return true;
 		}
 		return false;
-	}
-
-	public Team getTeam() {
-		return team;
-	}
-
-	public boolean isDealer() {
-		return dealer;
-	}
-
-	public void setDealer(boolean dealer) {
-		this.dealer = dealer;
-	}
-
-	public List<Card> getHand() {
-		return hand;
-	}
-
-	public void setHand(List<Card> hand) {
-		this.hand = hand;
 	}
 
 }

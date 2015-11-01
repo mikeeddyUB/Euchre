@@ -1,14 +1,21 @@
 package euchre.game.utilities;
 
-import euchre.players.BasicPlayer.Team;
-
 public class RoundResult {
 	private Team winningTeam;
 	private int pointsWon;
 	
-	public RoundResult(Card winningCard){
-		setWinningTeam(winningCard.getPlayedBy().getTeam());
-		pointsWon = 1; // hard code 1 for now
+	public RoundResult(int team1Score, int team2Score){
+		if ( team1Score > team2Score){
+			winningTeam = Team.ONE;
+		} else{
+			winningTeam = Team.TWO;
+		}
+		if ( team1Score == 5 || team2Score == 5){
+			pointsWon = 2;
+		} else {
+			pointsWon = 1;
+		}
+		System.out.println("Team " + winningTeam + " won the round " + team1Score + " to " + team2Score +" and got " + pointsWon + " points");
 	}
 
 	public Team getWinningTeam() {

@@ -4,9 +4,9 @@ import java.util.List;
 
 import euchre.game.utilities.Card;
 import euchre.game.utilities.Suite;
-import euchre.players.BasicPlayer.Team;
+import euchre.game.utilities.Team;
 
-public interface Player { // make this an abstract class I think
+public interface Player {
 	public Card playCard(List<Card> playedCards, Suite trump);
 	public List<Card> sortCards();
 	public Card discard(Suite trump);
