@@ -13,6 +13,7 @@ import euchre.game.utilities.Suite.SuiteName;
 import euchre.game.utilities.Team;
 
 public class BasicPlayer extends AbstractPlayer implements Player {
+	
 	public BasicPlayer() {
 		this.hand = new ArrayList<Card>();
 	}
@@ -23,20 +24,18 @@ public class BasicPlayer extends AbstractPlayer implements Player {
 		setTeam(team);
 	}
 
-	public Card playCard(List<Card> playedCards, Suite trump) { 
-																
+	public Card playCard(List<Card> playedCards, Suite trump) {
 		Card cardToPlay = null;
 		Suite suiteLead;
 		boolean followedSuite = false;
 		if (playedCards.size() > 0) {
 			// assuming the cards are in order...
 			suiteLead = playedCards.get(0).getSuite();
-			if(EuchreUtils.isLeft(playedCards.get(0), trump)){
+			if (EuchreUtils.isLeft(playedCards.get(0), trump)) {
 				suiteLead = trump;
 			}
-			
-			for (Card card : getHand()) {
 
+			for (Card card : getHand()) {
 				if (cardToPlay == null && card.getSuite().equals(suiteLead)) {
 					followedSuite = true;
 					cardToPlay = card;
@@ -47,7 +46,7 @@ public class BasicPlayer extends AbstractPlayer implements Player {
 		}
 
 		if (cardToPlay == null) { // for now if you dont have to follow suite
-									// just play a random card
+									// just play the first card in their hand
 			cardToPlay = getHand().get(0);
 			getHand().remove(cardToPlay);
 		}
@@ -66,7 +65,7 @@ public class BasicPlayer extends AbstractPlayer implements Player {
 	}
 
 	public Card discard(Suite trump) {
-
+		// for now just get worse card in hand
 		Card card = EuchreUtils.getLosingCard(hand, trump, null);
 		// remove card from hand and return it
 		this.removeCard(card);
@@ -90,7 +89,9 @@ public class BasicPlayer extends AbstractPlayer implements Player {
 	}
 
 	/**
-	 * currently being used to pick a suite (of the remaining suites) that has more than 1 card
+	 * currently being used to pick a suite (of the remaining suites) that has
+	 * more than 1 card
+	 * 
 	 * @param turnedSuite
 	 * @return
 	 */
@@ -114,7 +115,6 @@ public class BasicPlayer extends AbstractPlayer implements Player {
 	}
 
 	public Suite decideTrump(Suite turnedSuite, boolean anySuite, boolean mustCallTrump) {
-
 		Map<SuiteName, Integer> suiteMap = buildSuiteMapForTrump(turnedSuite);
 		// if the player has 3 of one suite or 2 and is the dealer ( and
 		// anySuite is false) then order it up
@@ -123,10 +123,8 @@ public class BasicPlayer extends AbstractPlayer implements Player {
 			suiteMap.remove(turnedSuite);
 			for (SuiteName key : suiteMap.keySet()) {
 				if (suiteMap.get(key) > 2) {
-					return EuchreGame.getSuite(key); // return trump with the
-														// name of key
+					return EuchreGame.getSuite(key);
 				}
-
 			}
 		} else {
 			int numSuites = suiteMap.get(turnedSuite.getName());
@@ -135,15 +133,14 @@ public class BasicPlayer extends AbstractPlayer implements Player {
 			}
 		}
 		// if they're the last person to decide trump (the dealer) then they
+		// must call it
 		if (mustCallTrump) {
 			suiteMap = buildSuiteMap(turnedSuite);
 			for (SuiteName key : suiteMap.keySet()) {
 				if (suiteMap.get(key) > 1) {
 					System.out.println("Player " + getId() + " was screwed and called " + key + "S");
-					return EuchreGame.getSuite(key); // return trump with the
-														// name of key
+					return EuchreGame.getSuite(key);
 				}
-
 			}
 		}
 		return null;
@@ -155,5 +152,4 @@ public class BasicPlayer extends AbstractPlayer implements Player {
 		}
 		return false;
 	}
-
 }

@@ -27,7 +27,6 @@ public class Kitty {
 
 	public void setCards(List<Card> cards) {
 		this.cards = cards;
-		System.out.println("Kitty set with " + cards.size() + " cards");
 	}
 
 	public Card getFlippedCard(boolean remove) {

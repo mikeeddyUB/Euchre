@@ -22,12 +22,13 @@ public class App {
 			Team teamThatOrderedSuite = trumpResult.getCalledBy().getTeam();
 			if (trump != null) {
 				RoundResult result = game.doRound(trump);
+				// could make a determine points method
 				if ( result.getWinningTeam() == Team.ONE ){
 					if (teamThatOrderedSuite == Team.ONE){
 						team1 += result.getPointsWon();
 					} else { // they got euchred
 						team1 += 2;
-						System.out.println(Team.ONE + " Euchred " + Team.TWO);
+						System.out.println(Team.ONE.toString() + " Euchred " + Team.TWO.toString());
 					}
 					
 				} else {
@@ -35,9 +36,8 @@ public class App {
 						team2 += result.getPointsWon();
 					} else { // they got euchred
 						team2 += 2;
-						System.out.println(Team.TWO + " Euchred " + Team.ONE);
+						System.out.println(Team.TWO.toString() + " Euchred " + Team.ONE.toString());
 					}
-					team2 += result.getPointsWon();
 				}
 				System.out.println("Round " + roundCounter + " over");
 				System.out.println("Team 1 : " + team1);
