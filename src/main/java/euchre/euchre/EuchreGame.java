@@ -16,6 +16,7 @@ import euchre.game.utilities.Suite.SuiteName;
 import euchre.game.utilities.Team;
 import euchre.game.utilities.TrumpCall;
 import euchre.players.BasicPlayer;
+import euchre.players.MediumPlayer;
 import euchre.players.Player;
 
 public class EuchreGame {
@@ -169,9 +170,9 @@ public class EuchreGame {
 	}
 
 	private void populatePlayers() {
-		players.add(new BasicPlayer(1L, Team.ONE));
+		players.add(new MediumPlayer(1L, Team.ONE));
 		players.add(new BasicPlayer(2L, Team.TWO));
-		players.add(new BasicPlayer(3L, Team.ONE));
+		players.add(new MediumPlayer(3L, Team.ONE));
 		players.add(new BasicPlayer(4L, Team.TWO));
 	}
 

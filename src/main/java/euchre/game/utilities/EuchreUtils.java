@@ -8,7 +8,7 @@ import euchre.game.utilities.Card.FaceValue;
 public class EuchreUtils {
 
 	public static boolean isLeft(Card card, Suite trump){
-		return card.getValue() != FaceValue.JACK && card.getSuite().getColor() == trump.getColor() && card.getSuite().getName() != trump.getName();
+		return card.getValue() == FaceValue.JACK && card.getSuite().getColor() == trump.getColor() && card.getSuite().getName() != trump.getName();
 	}
 	
 	public static Card getWinningCard(List<Card> cards, Suite trump, Suite leadSuite) {

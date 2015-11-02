@@ -2,10 +2,14 @@ package euchre.players;
 
 import java.util.List;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import euchre.game.utilities.Card;
+import euchre.game.utilities.EuchreUtils;
+import euchre.game.utilities.Suite;
 import euchre.game.utilities.Team;
 
-public abstract class AbstractPlayer {
+public abstract class AbstractPlayer implements Player{
 	
 	protected Long id;
 	protected Team team;
@@ -33,6 +37,65 @@ public abstract class AbstractPlayer {
 		}
 	}
 	
+	public Card playCardOfSuite(List<Card> playedCards, Suite suiteLead, Suite trump){ // add these to the interface?
+		throw new NotImplementedException("PlayCardOfSuite it not implemented");
+	}
+	
+	public Card playAnyCard(List<Card> playedCards, Suite trump){
+		throw new NotImplementedException("playAnyCard it not implemented");
+	}
+	
+	public Card chooseDiscard(Suite trump){
+		throw new NotImplementedException("chooseDiscard it not implemented");
+	}
+	
+	public Suite decideTrump(Suite turnedSuite, boolean anySuite, boolean mustCallTrump) {
+		throw new NotImplementedException("decideTrump it not implemented");
+	}
+	
+	public Card discard(Suite trump) {
+		Card card = chooseDiscard(trump);
+		this.removeCard(card);
+		System.out.println("Player " + getId() + " discarded " + card.toString());
+		return card;
+	}
+	
+	public Card playCard(List<Card> playedCards, Suite trump) { // go through and abstract the required logic
+		Card cardToPlay = null;
+		Suite suiteLead;
+		boolean followSuite = false;
+		if (playedCards.size() > 0) {
+			// assuming the cards are in order...
+			suiteLead = playedCards.get(0).getSuite();
+			if (EuchreUtils.isLeft(playedCards.get(0), trump)) {
+				suiteLead = trump;
+			}
+
+			for (Card card : getHand()) {
+				// change for abstraction: go through and see if they need to follow suite, if they do
+				// call player.decideMethodNameLater() and add an assert that the card was legal (for human choice)
+				if (cardToPlay == null && card.getSuite().equals(suiteLead)) {
+					followSuite = true;
+					// TODO: if there is only one option, just play the card instead of running extra logic
+					break;
+				}
+			}
+			if (followSuite){
+				cardToPlay = playCardOfSuite(playedCards, suiteLead, trump);
+				getHand().remove(cardToPlay);
+			}
+		}
+
+		if (cardToPlay == null) {
+			cardToPlay = playAnyCard(playedCards, trump);
+			getHand().remove(cardToPlay);
+		}
+
+		cardToPlay.setPlayedBy(this);
+		System.out.println(this.toString() + " played " + cardToPlay.toString()
+				+ (followSuite ? "(followed suite)" : "(random)"));
+		return cardToPlay;
+	}
 	public Long getId() {
 		return id;
 	}

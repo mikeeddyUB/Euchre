@@ -23,38 +23,22 @@ public class BasicPlayer extends AbstractPlayer implements Player {
 		setId(id);
 		setTeam(team);
 	}
-
-	public Card playCard(List<Card> playedCards, Suite trump) {
-		Card cardToPlay = null;
-		Suite suiteLead;
-		boolean followedSuite = false;
-		if (playedCards.size() > 0) {
-			// assuming the cards are in order...
-			suiteLead = playedCards.get(0).getSuite();
-			if (EuchreUtils.isLeft(playedCards.get(0), trump)) {
-				suiteLead = trump;
-			}
-
-			for (Card card : getHand()) {
-				if (cardToPlay == null && card.getSuite().equals(suiteLead)) {
-					followedSuite = true;
-					cardToPlay = card;
-					getHand().remove(card);
-					break;
-				}
+	
+	public Card playCardOfSuite(List<Card> playedCards, Suite suiteLead, Suite trump){
+		for ( Card card : getHand()){
+			if ( card.getSuite().equals(suiteLead) || EuchreUtils.isLeft(card, trump)){
+				return card;
 			}
 		}
-
-		if (cardToPlay == null) { // for now if you dont have to follow suite
-									// just play the first card in their hand
-			cardToPlay = getHand().get(0);
-			getHand().remove(cardToPlay);
-		}
-
-		cardToPlay.setPlayedBy(this);
-		System.out.println(this.toString() + " played " + cardToPlay.toString()
-				+ (followedSuite ? "(followed suite)" : "(random)"));
-		return cardToPlay;
+		return getHand().get(0);
+	}
+	
+	public Card playAnyCard(List<Card> playedCards, Suite trump){
+		return getHand().get(0);
+	}
+	
+	public Card chooseDiscard(Suite trump){
+		return EuchreUtils.getLosingCard(hand, trump, null);
 	}
 
 	/**
@@ -62,15 +46,6 @@ public class BasicPlayer extends AbstractPlayer implements Player {
 	 */
 	public List<Card> sortCards() {
 		return null;
-	}
-
-	public Card discard(Suite trump) {
-		// for now just get worse card in hand
-		Card card = EuchreUtils.getLosingCard(hand, trump, null);
-		// remove card from hand and return it
-		this.removeCard(card);
-		System.out.println("Player " + getId() + " discarded " + card.toString());
-		return card;
 	}
 
 	private Map<SuiteName, Integer> buildSuiteMapForTrump(Suite turnedSuite) {
@@ -119,6 +94,7 @@ public class BasicPlayer extends AbstractPlayer implements Player {
 		// if the player has 3 of one suite or 2 and is the dealer ( and
 		// anySuite is false) then order it up
 		// otherwise pass
+		
 		if (anySuite) {
 			suiteMap.remove(turnedSuite);
 			for (SuiteName key : suiteMap.keySet()) {

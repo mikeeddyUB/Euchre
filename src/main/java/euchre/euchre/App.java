@@ -11,6 +11,7 @@ public class App {
 		int team1 = 0;
 		int team2 = 0;
 		int roundCounter = 0;
+		int euchreCounter = 0;
 		
 		// add rules so that a team must win be two
 		
@@ -28,6 +29,7 @@ public class App {
 						team1 += result.getPointsWon();
 					} else { // they got euchred
 						team1 += 2;
+						euchreCounter++;
 						System.out.println(Team.ONE.toString() + " Euchred " + Team.TWO.toString());
 					}
 					
@@ -36,12 +38,14 @@ public class App {
 						team2 += result.getPointsWon();
 					} else { // they got euchred
 						team2 += 2;
+						euchreCounter++;
 						System.out.println(Team.TWO.toString() + " Euchred " + Team.ONE.toString());
 					}
 				}
 				System.out.println("Round " + roundCounter + " over");
 				System.out.println("Team 1 : " + team1);
-				System.out.println("Team 2 : " + team2 + "\n");
+				System.out.println("Team 2 : " + team2);
+				System.out.println("Euchres: " + euchreCounter + "\n");
 			}
 		}
 		
