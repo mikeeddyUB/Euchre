@@ -16,6 +16,11 @@ public abstract class AbstractPlayer implements Player{
 	protected List<Card> hand;
 	protected boolean dealer;
 	
+	public abstract Suite decideTrump(Suite turnedSuite, boolean anySuite, boolean mustCallTrump);
+	public abstract Card playCardOfSuite(List<Card> playedCards, Suite suiteLead, Suite trump); // add these to the interface?
+	public abstract Card playAnyCard(List<Card> playedCards, Suite trump);
+	public abstract Card chooseDiscard(Suite trump);
+	
 	public String toString(){
 		return "Player " + this.id;
 	}
@@ -35,22 +40,6 @@ public abstract class AbstractPlayer implements Player{
 		if (!cardFound) {
 			throw new RuntimeException("Couldnt find card: " + cardToRemove);
 		}
-	}
-	
-	public Card playCardOfSuite(List<Card> playedCards, Suite suiteLead, Suite trump){ // add these to the interface?
-		throw new NotImplementedException("PlayCardOfSuite it not implemented");
-	}
-	
-	public Card playAnyCard(List<Card> playedCards, Suite trump){
-		throw new NotImplementedException("playAnyCard it not implemented");
-	}
-	
-	public Card chooseDiscard(Suite trump){
-		throw new NotImplementedException("chooseDiscard it not implemented");
-	}
-	
-	public Suite decideTrump(Suite turnedSuite, boolean anySuite, boolean mustCallTrump) {
-		throw new NotImplementedException("decideTrump it not implemented");
 	}
 	
 	public Card discard(Suite trump) {
